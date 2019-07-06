@@ -1,0 +1,135 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jul  6 09:09:59 2019
+
+@author: Administrator
+"""
+#crop color shift rotation perspective
+import cv2
+import random
+import numpy as np
+
+#crop   
+def crop_random(img):
+    height,width,channel=img.shape
+    crop_width=random.randint( int(width/2),width+1 )
+    crop_height=random.randint( int(height/2),height+1 )
+    img_crop = img[:crop_height,:crop_width,:]
+    return img_crop
+#color shift
+def color_shift_random(img):    
+    B,G,R=cv2.split(img)
+    color_shift_single_channel_random(B)
+    color_shift_single_channel_random(G)
+    color_shift_single_channel_random(R)
+    img_color_shift=cv2.merge([B,G,R])
+    return img_color_shift
+    
+def color_shift_single_channel_random(img_gray):      
+    randp = random.randint(-50,50)
+   
+    if randp==0:
+        pass
+    elif randp>0:     
+        lim = 255 - randp
+        img_gray[img_gray>lim]=255
+        img_gray[img_gray<=lim]=(img_gray[img_gray<=lim]+randp).astype(img.dtype) 
+    else:
+        lim = - randp
+        img_gray[img_gray<lim]=0
+        img_gray[img_gray>=lim]=(img_gray[img_gray>=lim]+lim).astype(img.dtype)
+#rotation
+def rotation_ramdom(img):
+    M = cv2.getRotationMatrix2D((img.shape[1]/2,img.shape[0]/2),random.randint(1,181),random.uniform(0.5,1))    
+    img_rotation=cv2.warpAffine(img,M,(img.shape[1],img.shape[0]))
+    return img_rotation
+#perspective
+def perspective_ramdom(img):        
+    height,width,channel=img.shape
+    random_margin = 60
+    x1 = random.randint(-random_margin, random_margin)
+    y1 = random.randint(-random_margin, random_margin)
+    x2 = random.randint(width - random_margin - 1, width - 1)
+    y2 = random.randint(-random_margin, random_margin)
+    x3 = random.randint(width - random_margin - 1, width - 1)
+    y3 = random.randint(height - random_margin - 1, height - 1)
+    x4 = random.randint(-random_margin, random_margin)
+    y4 = random.randint(height - random_margin - 1, height - 1)
+
+    dx1 = random.randint(-random_margin, random_margin)
+    dy1 = random.randint(-random_margin, random_margin)
+    dx2 = random.randint(width - random_margin - 1, width - 1)
+    dy2 = random.randint(-random_margin, random_margin)
+    dx3 = random.randint(width - random_margin - 1, width - 1)
+    dy3 = random.randint(height - random_margin - 1, height - 1)
+    dx4 = random.randint(-random_margin, random_margin)
+    dy4 = random.randint(height - random_margin - 1, height - 1)
+    pts1 = np.float32([[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
+    pts2 = np.float32([[dx1, dy1], [dx2, dy2], [dx3, dy3], [dx4, dy4]])
+    M = cv2.getPerspectiveTransform(pts1,pts2)
+    img_perspective = cv2.warpPerspective(img,M,(width,height))
+    return img_perspective
+
+
+###############################################################################    
+img = cv2.imread('./lena.jpg',-1)        
+q = input("Do you want to crop the image randomly? Y or N ")
+if q=='Y' or q=='y':
+    img_crop = crop_random(img)
+    cv2.imshow('test',img_crop)
+    key = cv2.waitKey(100)
+else:
+    img_crop = img
+
+#
+#color shift
+q = input("Do you want color shift randomly? Y or N ")
+if q=='Y' or q=='y':
+    img_color_shift = color_shift_random(img_crop)
+    cv2.imshow('test',img_color_shift)
+    key = cv2.waitKey(100)
+else:
+    img_color_shift = img_crop
+ 
+#rotation
+q = input("Do you want a random rotation? Y or N ")
+if q=='Y' or q=='y':
+    img_rotation = rotation_ramdom(img_color_shift)
+    cv2.imshow('test',img_rotation)
+    key = cv2.waitKey(100)
+else:
+    img_rotation = img_color_shift
+    
+#perspective
+q = input("Do you want a perspective transform? Y or N ")
+if q=='Y' or q=='y':
+    img_perspective = perspective_ramdom(img_rotation)
+else:
+    img_perspective = img_rotation
+
+   
+cv2.imshow('test',img_perspective)
+key = cv2.waitKey(2000)
+cv2.destroyAllWindows()    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
