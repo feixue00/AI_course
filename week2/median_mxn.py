@@ -42,7 +42,7 @@ def medianBlur(img, kernel=[3,3], padding_way='ZERO'):
     return img_blur
 import cv2
 import numpy as np
-img_bgr = cv2.imread('./picture/test/jiaoyan.png',0)
+img_bgr = cv2.imread('jiaoyan.png',0)
 cv2.imshow('img_original',img_bgr)
 img_blur = medianBlur(img_bgr,[5,5])
 cv2.imshow('img_blur',img_blur)
