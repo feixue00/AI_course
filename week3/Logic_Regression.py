@@ -45,6 +45,6 @@ def run():
     train(data_list,batch_size=200,max_iter=20000,lr=0.1)
     
 if __name__=='__main__':
-  run()
+    run()
 
     
